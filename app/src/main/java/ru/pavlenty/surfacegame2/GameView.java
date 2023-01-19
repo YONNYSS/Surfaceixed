@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.media.MediaPlayer;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -19,10 +20,13 @@ public class GameView extends SurfaceView implements Runnable {
     volatile boolean playing;
     private Thread gameThread = null;
     private Player player;
+    private Friend friend;
+    private Enemy enemy;
 
     private Paint paint;
     private Canvas canvas;
     private SurfaceHolder surfaceHolder;
+    private Boom boom;
 
     private ArrayList<Star> stars = new ArrayList<Star>();
 
@@ -52,7 +56,9 @@ public class GameView extends SurfaceView implements Runnable {
     public GameView(Context context, int screenX, int screenY) {
         super(context);
         player = new Player(context, screenX, screenY);
-
+        friend = new Friend(context, screenX,screenY);
+        enemy = new Enemy(context, screenX, screenY);
+        boom = new Boom(context, screenX, screenY);
         surfaceHolder = getHolder();
         paint = new Paint();
 
@@ -138,6 +144,22 @@ public class GameView extends SurfaceView implements Runnable {
                     player.getX(),
                     player.getY(),
                     paint);
+            canvas.drawBitmap(
+                    friend.getBitmap(),
+                    friend.getX(),
+                    friend.getY(),
+                    paint);
+            canvas.drawBitmap(
+                    enemy.getBitmap(),
+                    enemy.getX(),
+                    enemy.getY(),
+                    paint);
+            canvas.drawBitmap(
+                    boom.getBitmap(),
+                    boom.getX(),
+                    boom.getY(),
+                    paint);
+
 
 
             if(isGameOver){
@@ -162,10 +184,23 @@ public class GameView extends SurfaceView implements Runnable {
         score++;
 
         player.update();
+        friend.update();
+        enemy.update();
+
 
 
         for (Star s : stars) {
             s.update(player.getSpeed());
+        }
+        boom.setX(-250);
+        boom.setY(-250);
+        if(Rect.intersects(player.getDetectCollision(),enemy.getDetectCollision())){
+            Log.d("RRR", "Boom");
+            boom.setX(enemy.getX());
+            boom.setY(enemy.getY());
+            killedEnemysound.start();
+            enemy.setX(-500);
+
         }
     }
 

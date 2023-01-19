@@ -1,7 +1,8 @@
 package ru.pavlenty.surfacegame2;
 
 import java.util.Random;
-
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
 public class Star {
     private int x;
@@ -21,9 +22,7 @@ public class Star {
         minX = 0;
         minY = 0;
         Random generator = new Random();
-        speed = generator.nextInt(10);
-
-
+        speed = generator.nextInt(15);
         x = generator.nextInt(maxX);
         y = generator.nextInt(maxY);
     }
